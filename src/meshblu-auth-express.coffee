@@ -1,7 +1,7 @@
 _ = require 'lodash'
 
 class MeshbluAuthExpress
-  setFromAnywhere: (request) =>
+  getFromAnywhere: (request) =>
     @setFromHeaders request
     @setFromCookies request
     @setFromBasicAuth request
