@@ -1,10 +1,11 @@
 MeshbluAuthExpress = require '../src/meshblu-auth-express'
 
 describe 'MeshbluAuthExpress', ->
-  beforeEach ->
-    @sut = new MeshbluAuthExpress
 
   describe '->setFromBearerToken', ->
+    beforeEach ->
+      @sut = new MeshbluAuthExpress
+
     describe 'with a valid bearer token', ->
       beforeEach ->
         @next = sinon.spy()
@@ -59,6 +60,9 @@ describe 'MeshbluAuthExpress', ->
         expect(@request.meshbluAuth).to.not.exist
 
   describe '->setFromBasicAuth', ->
+    beforeEach ->
+      @sut = new MeshbluAuthExpress
+
     describe 'with a valid basic auth', ->
       beforeEach ->
         @next = sinon.spy()
@@ -114,6 +118,9 @@ describe 'MeshbluAuthExpress', ->
 
 
   describe '->setFromCookies', ->
+    beforeEach ->
+      @sut = new MeshbluAuthExpress
+
     describe 'with a valid cookie', ->
       beforeEach ->
         @next = sinon.spy()
@@ -158,6 +165,9 @@ describe 'MeshbluAuthExpress', ->
         expect(@request.meshbluAuth).to.not.exist
 
   describe '->setFromHeaders', ->
+    beforeEach ->
+      @sut = new MeshbluAuthExpress
+
     describe 'with a valid basic auth', ->
       beforeEach ->
         @next = sinon.spy()
@@ -200,3 +210,112 @@ describe 'MeshbluAuthExpress', ->
 
       it 'should set meshbluAuth on the request', ->
         expect(@request.meshbluAuth).to.not.exist
+
+  describe '->authDeviceWithMeshblu', ->
+    describe 'when instantiated without meshblu configuration', ->
+      beforeEach ->
+        @sut = new MeshbluAuthExpress
+
+      describe 'when called with uuid and token', ->
+        beforeEach (done) ->
+          @sut.authDeviceWithMeshblu 'cool-blue', 'redish-kinda', (@error) => done()
+
+        it 'should have an error', ->
+          expect(@error).to.exist
+
+      describe 'when called without uuid and token', ->
+        beforeEach (done) ->
+          @sut.authDeviceWithMeshblu null, null, (@error) => done()
+
+        it 'should have an error', ->
+          expect(@error).to.exist
+
+    describe 'when instantiated with meshblu configuration', ->
+      beforeEach ->
+        @request = {}
+        @request.get = sinon.stub().yields null, {}, devices: [uuid: 'blackened']
+        dependencies = request: @request
+        options =
+          json: true
+          server: 'yellow-mellow'
+          port: 'greeeeeeennn'
+          protocol: 'https'
+
+        @sut = new MeshbluAuthExpress options, dependencies
+
+      describe 'when called with valid uuid and token', ->
+        beforeEach (done) ->
+          @sut.authDeviceWithMeshblu 'blackened', 'bluened', (@error) => done()
+
+        it 'should call request.get with correct url and options', ->
+          url = "https://yellow-mellow:greeeeeeennn/devices/blackened"
+          options =
+            json: true
+            auth:
+              user: 'blackened'
+              pass: 'bluened'
+
+          expect(@request.get).to.have.been.calledWith url, options
+
+        it 'should yields without an error', ->
+          expect(@error).to.not.exist
+
+    describe 'when instantiated with different meshblu configuration and yeilds an error', ->
+      beforeEach ->
+        @request = {}
+        @request.get = sinon.stub().yields new Error('unable to validate device'), {}, {}
+        dependencies = request: @request
+        options =
+          json: true
+          server: 'mellow-yellow'
+          port: 'purplleeee'
+          protocol: 'https'
+
+        @sut = new MeshbluAuthExpress options, dependencies
+
+      describe 'when called with invalid uuid and token', ->
+        beforeEach (done) ->
+          @sut.authDeviceWithMeshblu 'cheese-yellow', 'blue-cheese', (@error) => done()
+
+        it 'should call request.get with correct url and options', ->
+          url = "https://mellow-yellow:purplleeee/devices/cheese-yellow"
+          options =
+            json: true
+            auth:
+              user: 'cheese-yellow'
+              pass: 'blue-cheese'
+
+          expect(@request.get).to.have.been.calledWith url, options
+
+        it 'should yields with an error', ->
+          expect(@error).to.exist
+
+    describe 'when instantiated with different meshblu configuration and yeilds no devices', ->
+      beforeEach ->
+        @request = {}
+        @request.get = sinon.stub().yields null, {}, devices: []
+        dependencies = request: @request
+        options =
+          json: true
+          server: 'mellow-yellow'
+          port: 'purplleeee'
+          protocol: 'https'
+
+        @sut = new MeshbluAuthExpress options, dependencies
+
+      describe 'when called with invalid uuid and token', ->
+        beforeEach (done) ->
+          @sut.authDeviceWithMeshblu 'cheese-yellow', 'blue-cheese', (@error) => done()
+
+        it 'should call request.get with correct url and options', ->
+          url = "https://mellow-yellow:purplleeee/devices/cheese-yellow"
+          options =
+            json: true
+            auth:
+              user: 'cheese-yellow'
+              pass: 'blue-cheese'
+
+          expect(@request.get).to.have.been.calledWith url, options
+
+        it 'should yields with an error', ->
+          expect(@error).to.exist

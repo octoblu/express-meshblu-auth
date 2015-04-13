@@ -1,12 +1,12 @@
 MeshbluAuthExpress = require './src/meshblu-auth-express'
 
-module.exports = ->
-  meshbluAuthExpress = new MeshbluAuthExpress
+module.exports = (meshbluOptions) ->
+  meshbluAuthExpress = new MeshbluAuthExpress meshbluOptions
 
   middleware = (request, response, next) ->
     meshbluAuthExpress.getFromAnywhere request
     {uuid, token} = request.meshbluAuth
     return response.status(401).end() unless uuid? && token?
-    next()
+    meshbluAuthExpress.authDeviceWithMeshblu uuid, token, next
 
   middleware

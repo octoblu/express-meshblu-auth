@@ -1,6 +1,27 @@
 _ = require 'lodash'
 
 class MeshbluAuthExpress
+  constructor: (@meshbluOptions={}, dependencies={}) ->
+    @request = dependencies.request ? require 'request'
+    @defaultMeshbluOptions =
+      server: 'meshblu.octoblu.com'
+      port: 443
+      protocol: 'https'
+
+  authDeviceWithMeshblu: (uuid, token, callback=->) =>
+    {server, port, protocol} = _.extend @defaultMeshbluOptions, @meshbluOptions
+    return callback new Error('Meshblu credentials missing') unless uuid? && token?
+    options =
+      json: true
+      auth:
+        user: uuid
+        pass: token
+    urlBase = "#{protocol}://#{server}:#{port}"
+    @request.get "#{urlBase}/devices/#{uuid}", options, (error, response, body) =>
+      return callback error if error?
+      return callback new Error('No device not found') if _.isEmpty body.devices
+      callback()
+
   getFromAnywhere: (request) =>
     @setFromHeaders request
     @setFromCookies request
