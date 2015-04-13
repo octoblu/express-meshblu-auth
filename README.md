@@ -19,6 +19,6 @@ Express middleware to support all meshblu auth styles
       protocol: 'https'
     ));
     app.use(function (request, response) {
-      request.send({uuid: request.meshbluAuth.uuid, token: request.meshbluAuth.token});
+      response.json({uuid: request.meshbluAuth.uuid, token: request.meshbluAuth.token});
     });
     app.listen(3333);
