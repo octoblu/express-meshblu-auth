@@ -1,0 +1,14 @@
+sudo: false
+language: node_js
+node_js:
+  - '0.10'
+deploy:
+  - provider: npm
+    skip_cleanup: true
+    clean_up: false
+    email: serveradmin@octoblu.com
+    api_key:
+      secure: GZQU+DPA2EIUf4ziHwggEUssUucK5R1dCeLPE4xJr5oqx579N01pS7nPQaDAXGnJtSKV1g+54yNlOghSz7kfxNJydsalHCJXA0bToa+GTZKUQel32+6Gbv2M5T3nlCm4GAhPUgTS3KoOXNDTN0VbD1oBMnnawcF5Bq38E3hwWMw=
+    on:
+      tags: true
+      all_branches: true
