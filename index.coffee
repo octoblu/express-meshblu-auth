@@ -5,7 +5,7 @@ module.exports = (meshbluOptions) ->
 
   middleware = (request, response, next) ->
     meshbluAuthExpress.getFromAnywhere request
-    {uuid, token} = request.meshbluAuth
+    {uuid, token} = request.meshbluAuth ? {}
     return response.status(401).end() unless uuid? && token?
     meshbluAuthExpress.authDeviceWithMeshblu uuid, token, (error) ->
       if error?
