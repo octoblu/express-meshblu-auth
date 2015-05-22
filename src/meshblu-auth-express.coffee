@@ -11,9 +11,9 @@ class MeshbluAuthExpress
     return callback new Error('Meshblu credentials missing') unless uuid? && token?
     options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
     meshbluHttp = new @MeshbluHttp options
-    meshbluHttp.whoami (error, response, body) =>
+    meshbluHttp.whoami (error, body) =>
       return callback error if error?
-      return callback new Error('No device not found') if _.isEmpty body
+      return callback new Error('No device found') if _.isEmpty body
       callback()
 
   getFromAnywhere: (request) =>
