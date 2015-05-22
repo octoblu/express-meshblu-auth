@@ -238,7 +238,7 @@ describe 'MeshbluAuthExpress', ->
 
         describe 'when MeshbluHttp yields a device', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield null, null, {uuid: 'blackened'}
+            @meshbluHttp.whoami.yield null, {uuid: 'blackened'}
 
           it 'should yields without an error', ->
             expect(@error).to.not.exist
@@ -252,7 +252,7 @@ describe 'MeshbluAuthExpress', ->
 
         describe 'when MeshbluHttp yields no device', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield null, null, null
+            @meshbluHttp.whoami.yield null, null
 
           it 'should yields with an error', ->
             expect(@error).to.exist
