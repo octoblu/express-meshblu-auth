@@ -164,6 +164,50 @@ describe 'MeshbluAuthExpress', ->
       it 'should set meshbluAuth on the request', ->
         expect(@request.meshbluAuth).to.not.exist
 
+  describe '->setFromSkynetHeaders', ->
+    beforeEach ->
+      @sut = new MeshbluAuthExpress
+
+    describe 'with a valid auth', ->
+      beforeEach ->
+        @next = sinon.spy()
+        @request =
+          headers:
+            'X-Meshblu-UUID': 'greenish-yellow'
+            'X-Meshblu-Token': 'blue-a-lot'
+        @sut.setFromXMeshbluHeaders(@request)
+
+      it 'should set meshbluAuth on the request', ->
+        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+
+    describe 'with a crazy case', ->
+      beforeEach ->
+        @next = sinon.spy()
+        @request =
+          headers:
+            'x-meshBLU-uuID': 'greenish-yellow'
+            'X-meshblu-token': 'blue-a-lot'
+        @sut.setFromXMeshbluHeaders(@request)
+
+      it 'should set meshbluAuth on the request', ->
+        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+
+  describe '->setFromSkynetHeaders', ->
+    beforeEach ->
+      @sut = new MeshbluAuthExpress
+
+    describe 'with a valid auth', ->
+      beforeEach ->
+        @next = sinon.spy()
+        @request =
+          headers:
+            skynet_auth_uuid: 'greenish-yellow'
+            skynet_auth_token: 'blue-a-lot'
+        @sut.setFromSkynetHeaders(@request)
+
+      it 'should set meshbluAuth on the request', ->
+        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+
   describe '->setFromHeaders', ->
     beforeEach ->
       @sut = new MeshbluAuthExpress

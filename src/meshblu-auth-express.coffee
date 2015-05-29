@@ -18,6 +18,8 @@ class MeshbluAuthExpress
 
   getFromAnywhere: (request) =>
     @setFromHeaders request
+    @setFromSkynetHeaders request
+    @setFromXMeshbluHeaders request
     @setFromCookies request
     @setFromBasicAuth request
     @setFromBearerToken request
@@ -33,6 +35,17 @@ class MeshbluAuthExpress
 
   setFromHeaders: (request) =>
     @_setFromObject request, request.headers
+
+  setFromSkynetHeaders: (request) =>
+    @_setFromObject request,
+      meshblu_auth_uuid: request.headers.skynet_auth_uuid
+      meshblu_auth_token: request.headers.skynet_auth_token
+
+  setFromXMeshbluHeaders: (request) =>
+    lowerCaseHeaders = _.mapKeys request.headers, (value, key) => key.toLowerCase()
+    @_setFromObject request,
+      meshblu_auth_uuid: lowerCaseHeaders['x-meshblu-uuid']
+      meshblu_auth_token: lowerCaseHeaders['x-meshblu-token']
 
   _setFromAuthorizationHeader: (request, scheme) =>
     return unless request.headers?
