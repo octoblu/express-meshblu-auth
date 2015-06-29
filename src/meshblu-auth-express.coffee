@@ -42,7 +42,7 @@ class MeshbluAuthExpress
       meshblu_auth_token: request.headers.skynet_auth_token
 
   setFromXMeshbluHeaders: (request) =>
-    lowerCaseHeaders = _.mapKeys request.headers, (value, key) => key.toLowerCase()
+    lowerCaseHeaders = _.mapKeys request.headers, (value, key) => key?.toLocaleLowerCase()
     @_setFromObject request,
       meshblu_auth_uuid: lowerCaseHeaders['x-meshblu-uuid']
       meshblu_auth_token: lowerCaseHeaders['x-meshblu-token']
@@ -50,7 +50,7 @@ class MeshbluAuthExpress
   _setFromAuthorizationHeader: (request, scheme) =>
     return unless request.headers?
     parts = request.headers.authorization?.split(' ')
-    return unless parts? && parts[0] == scheme
+    return unless parts? && parts[0]?.toLocaleLowerCase() == scheme?.toLocaleLowerCase()
 
     auth = new Buffer(parts[1], 'base64').toString().split(':')
     uuid = auth[0]
