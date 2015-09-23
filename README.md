@@ -22,3 +22,9 @@ Express middleware to support all meshblu auth styles
       response.json({uuid: request.meshbluAuth.uuid, token: request.meshbluAuth.token});
     });
     app.listen(3333);
+
+[![Build Status](https://travis-ci.org/octoblu/express-meshblu-auth.svg?branch=master)](https://travis-ci.org/octoblu/express-meshblu-auth)
+[![Code Climate](https://codeclimate.com/github/octoblu/express-meshblu-auth/badges/gpa.svg)](https://codeclimate.com/github/octoblu/express-meshblu-auth)
+[![Test Coverage](https://codeclimate.com/github/octoblu/express-meshblu-auth/badges/coverage.svg)](https://codeclimate.com/github/octoblu/express-meshblu-auth)
+[![npm version](https://badge.fury.io/js/express-meshblu-auth.svg)](http://badge.fury.io/js/express-meshblu-auth)
+[![Gitter](https://badges.gitter.im/octoblu/help.svg)](https://gitter.im/octoblu/help)
