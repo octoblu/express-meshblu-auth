@@ -1,5 +1,5 @@
-# Express Meshblu Authentication Middleware
-Express middleware to support all meshblu auth styles
+# Express Meshblu Device Authentication Middleware
+Express middleware to support all meshblu auth styles for a singular device
 
 ## Supported Auth Methods
 
@@ -10,15 +10,16 @@ Express middleware to support all meshblu auth styles
 
 ## Example:
     var express = require('express');
-    var meshbluAuth = require('express-meshblu-auth');
+    var meshbluAuthDevice = require('express-meshblu-auth-device');
     var app = express();
 
-    app.use(meshbluAuth(
+    app.use(meshbluAuthDevice(
+      uuid: '340d1779-300c-45cd-b133-2f316df8097a'
       server: 'meshblu.octoblu.com',
       port: 443,
       protocol: 'https'
     ));
     app.use(function (request, response) {
-      response.json({uuid: request.meshbluAuth.uuid, token: request.meshbluAuth.token});
+      response.json({uuid: request.meshbluAuthDevice.uuid, token: request.meshbluAuthDevice.token});
     });
     app.listen(3333);
