@@ -1,11 +1,8 @@
 _ = require 'lodash'
 
 class MeshbluAuthExpress
-  constructor: (meshbluOptions={}, dependencies={}) ->
+  constructor: (@meshbluOptions, dependencies={}) ->
     @MeshbluHttp = dependencies.MeshbluHttp ? require 'meshblu-http'
-    @meshbluOptions = _.defaults meshbluOptions,
-      server: 'meshblu.octoblu.com'
-      port: 443
 
   authDeviceWithMeshblu: (uuid, token, callback=->) =>
     return callback new Error('Meshblu credentials missing') unless uuid? && token?
