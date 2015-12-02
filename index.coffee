@@ -10,7 +10,7 @@ module.exports = (meshbluOptions) ->
     meshbluAuthExpress.authDeviceWithMeshblu uuid, token, (error) ->
       if error?
         console.error error
-        return response.status(401).end()
+        return response.status(403).end()
       next()
 
   middleware
