@@ -10,7 +10,12 @@ class MeshbluAuthExpress
     meshbluHttp = new @MeshbluHttp options
     meshbluHttp.whoami (error, body) =>
       return callback error if error?
-      return callback new Error('No device found') if _.isEmpty body
+
+      if _.isEmpty body
+        error = new Error 'Device Not Found'
+        error.code = 404
+        return callback error
+
       callback()
 
   getFromAnywhere: (request) =>
