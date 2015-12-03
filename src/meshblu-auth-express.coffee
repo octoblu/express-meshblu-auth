@@ -68,8 +68,8 @@ class MeshbluAuthExpress
 
   _setMeshbluAuth: (request, uuid, token) =>
     return unless uuid? && token?
-    request.meshbluAuth ?= {}
-    request.meshbluAuth.uuid = _.trim uuid
-    request.meshbluAuth.token = _.trim token
+    uuid  = _.trim uuid
+    token = _.trim token
+    request.meshbluAuth = _.extend {uuid: uuid, token: token}, @meshbluOptions, request.meshbluAuth
 
 module.exports = MeshbluAuthExpress
