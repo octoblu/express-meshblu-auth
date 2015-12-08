@@ -10,7 +10,7 @@ module.exports = (meshbluOptions) ->
     meshbluAuthExpress.authDeviceWithMeshblu uuid, token, (error) ->
       if error?
         console.error error.stack
-        return response.status(403).send("Meshblu Authentication Failed")
+        return response.status(error.code ? 403).send("Meshblu Authentication Failed")
       next()
 
   middleware
