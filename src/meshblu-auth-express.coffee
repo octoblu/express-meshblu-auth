@@ -16,7 +16,7 @@ class MeshbluAuthExpress
         error.code = 404
         return callback error
 
-      callback null, body
+      callback()
 
   getFromAnywhere: (request) =>
     @setFromHeaders request

@@ -287,8 +287,8 @@ describe 'MeshbluAuthExpress', ->
           it 'should yields without an error', ->
             expect(@error).to.not.exist
 
-          it 'should yield the device', ->
-            expect(@result).to.deep.equal uuid: 'blackened', foo: 'bar'
+          it 'should NOT yield the device, because it actually gives us the device mixed with webhook metadata...sometimes.', ->
+            expect(@result).to.not.exist
 
         describe 'when MeshbluHttp yields an error', ->
           beforeEach ->
