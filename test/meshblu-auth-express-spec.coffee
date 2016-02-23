@@ -133,6 +133,19 @@ describe 'MeshbluAuthExpress', ->
       it 'should set meshbluAuth on the request', ->
         expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
+    describe 'with a valid bearer cookie', ->
+      beforeEach ->
+        bearer =  Buffer('i-can-barely-stand:erik', 'utf8').toString('base64')
+        console.log "I can BEARLY Stand #{bearer}"
+        @next = sinon.spy()
+        @request =
+          cookies:
+            meshblu_auth_bearer: bearer
+        @sut.setFromCookies(@request)
+
+      it 'should set meshbluAuth on the request', ->
+        expect(@request.meshbluAuth).to.deep.equal uuid: 'i-can-barely-stand', token: 'erik'
+
     describe 'with a different valid cookie', ->
       beforeEach ->
         @next = sinon.spy()

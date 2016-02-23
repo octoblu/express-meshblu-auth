@@ -49,19 +49,24 @@ class MeshbluAuthExpress
       meshblu_auth_uuid: lowerCaseHeaders['x-meshblu-uuid']
       meshblu_auth_token: lowerCaseHeaders['x-meshblu-token']
 
+  _getFromAuthString: (authString) =>
+    auth = new Buffer(authString, 'base64').toString().split(':')
+    return uuid: auth[0], token: auth[1]  
+
   _setFromAuthorizationHeader: (request, scheme) =>
     return unless request.headers?
     parts = request.headers.authorization?.split(' ')
     return unless parts? && parts[0]?.toLocaleLowerCase() == scheme?.toLocaleLowerCase()
-
-    auth = new Buffer(parts[1], 'base64').toString().split(':')
-    uuid = auth[0]
-    token = auth[1]
-
+    {uuid,token} = @_getFromAuthString parts[1]
     @_setMeshbluAuth request, uuid, token
 
   _setFromObject: (request, object) =>
-    {meshblu_auth_uuid, meshblu_auth_token} = object ? {}
+    {meshblu_auth_uuid, meshblu_auth_token, meshblu_auth_bearer} = object ? {}
+
+    if meshblu_auth_bearer?
+      {uuid, token} = @_getFromAuthString meshblu_auth_bearer
+      meshblu_auth_uuid = uuid
+      meshblu_auth_token = token
 
     return unless meshblu_auth_uuid? && meshblu_auth_token?
     @_setMeshbluAuth request, meshblu_auth_uuid, meshblu_auth_token
