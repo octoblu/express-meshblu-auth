@@ -14,10 +14,8 @@ module.exports = (meshbluOptions, {errorCallback}={}) ->
 
     meshbluAuthExpress.authDeviceWithMeshblu uuid, token, (error) ->
       if error?
-        console.error error.stack
         return errorCallback error, {req, res} if errorCallback?
         return res.status(error.code ? 403).send("Meshblu Authentication Failed")
-
       next()
 
   middleware
