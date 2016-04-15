@@ -2,7 +2,7 @@ MeshbluAuthExpress = require './src/meshblu-auth-express'
 
 class MeshbluAuth
   constructor: (options) ->
-    @meshbluAuthExpress = new MeshbluAuth options
+    @meshbluAuthExpress = new MeshbluAuthExpress options
 
   retrieve: (req, res, next) =>
     credentials = @meshbluAuthExpress.getFromAnywhere req
