@@ -9,10 +9,9 @@ class MeshbluAuthExpress
     options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
     meshbluHttp = new @MeshbluHttp options
     meshbluHttp.whoami (error, body) =>
-      return callback error if error?
+      return callback error if error? && !@_isUserError error
       return callback null, null if _.isEmpty body
       return callback null, _.defaults {uuid: uuid, token: token}, @meshbluOptions
-
 
   getFromAnywhere: (request) =>
     auth = @getFromHeaders request
@@ -80,6 +79,10 @@ class MeshbluAuthExpress
       uuid:  _.trim meshblu_auth_uuid
       token: _.trim meshblu_auth_token
     }
+
+  _isUserError: (error) =>
+    return unless error.code?
+    error.code < 500
 
   _setMeshbluAuth: (request, uuid, token) =>
     return unless uuid? && token?

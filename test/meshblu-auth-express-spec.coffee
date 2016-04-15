@@ -271,12 +271,31 @@ describe 'MeshbluAuthExpress', ->
               token: 'bluened'
             }
 
-        describe 'when MeshbluHttp yields an error', ->
+        describe 'when MeshbluHttp yields an error with no code', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield new Error('not authorized')
+            @meshbluHttp.whoami.yield new Error('Generic Error')
 
           it 'should yields with an error', ->
-            expect(=> throw @error).to.throw 'not authorized'
+            expect(=> throw @error).to.throw 'Generic Error'
+
+        describe 'when MeshbluHttp yields an error with a 401', ->
+          beforeEach ->
+            error = new Error('Unauthorized')
+            error.code = 401
+            @meshbluHttp.whoami.yield error
+
+          it 'should yield nulls', ->
+            expect(@error).to.be.null
+            expect(@result).to.be.null
+
+        describe 'when MeshbluHttp yields an error with a 500', ->
+          beforeEach ->
+            error = new Error('Internal Server Error')
+            error.code = 500
+            @meshbluHttp.whoami.yield error
+
+          it 'should yields with an error', ->
+            expect(=> throw @error).to.throw 'Internal Server Error'
 
         describe 'when MeshbluHttp yields no device', ->
           beforeEach ->
