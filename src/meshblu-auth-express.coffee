@@ -10,57 +10,64 @@ class MeshbluAuthExpress
     meshbluHttp = new @MeshbluHttp options
     meshbluHttp.whoami (error, body) =>
       return callback error if error?
+      return callback null, null if _.isEmpty body
+      return callback null, _.defaults {uuid: uuid, token: token}, @meshbluOptions
 
-      if _.isEmpty body
-        error = new Error 'Device Not Found'
-        error.code = 404
-        return callback error
-
-      callback()
 
   getFromAnywhere: (request) =>
-    @setFromHeaders request
-    @setFromSkynetHeaders request
-    @setFromXMeshbluHeaders request
-    @setFromCookies request
-    @setFromBasicAuth request
-    @setFromBearerToken request
+    auth = @getFromHeaders request
+    return auth if auth?
+    auth = @getFromSkynetHeaders request
+    return auth if auth?
+    auth = @getFromXMeshbluHeaders request
+    return auth if auth?
+    auth = @getFromCookies request
+    return auth if auth?
+    auth = @getFromBasicAuth request
+    return auth if auth?
+    auth = @getFromBearerToken request
+    return auth if auth?
 
-  setFromBasicAuth: (request) =>
-    @_setFromAuthorizationHeader request, 'Basic'
+    return null
 
-  setFromBearerToken: (request) =>
-    @_setFromAuthorizationHeader request, 'Bearer'
+  getFromBasicAuth: (request) =>
+    @_getFromAuthorizationHeader request, 'Basic'
 
-  setFromCookies: (request) =>
-    @_setFromObject request, request.cookies
+  getFromBearerToken: (request) =>
+    @_getFromAuthorizationHeader request, 'Bearer'
 
-  setFromHeaders: (request) =>
-    @_setFromObject request, request.headers
+  getFromCookies: (request) =>
+    @_getFromObject request, request.cookies
 
-  setFromSkynetHeaders: (request) =>
-    @_setFromObject request,
+  getFromHeaders: (request) =>
+    @_getFromObject request, request.headers
+
+  getFromSkynetHeaders: (request) =>
+    @_getFromObject request,
       meshblu_auth_uuid: request.headers.skynet_auth_uuid
       meshblu_auth_token: request.headers.skynet_auth_token
 
-  setFromXMeshbluHeaders: (request) =>
+  getFromXMeshbluHeaders: (request) =>
     lowerCaseHeaders = _.mapKeys request.headers, (value, key) => key?.toLocaleLowerCase()
-    @_setFromObject request,
+    @_getFromObject request,
       meshblu_auth_uuid: lowerCaseHeaders['x-meshblu-uuid']
       meshblu_auth_token: lowerCaseHeaders['x-meshblu-token']
 
   _getFromAuthString: (authString) =>
     auth = new Buffer(authString, 'base64').toString().split(':')
-    return uuid: auth[0], token: auth[1]  
+    return null unless _.size(auth) == 2
+    return {
+      uuid:  _.trim auth[0]
+      token: _.trim auth[1]
+    }
 
-  _setFromAuthorizationHeader: (request, scheme) =>
-    return unless request.headers?
+  _getFromAuthorizationHeader: (request, scheme) =>
+    return null unless request.headers?
     parts = request.headers.authorization?.split(' ')
-    return unless parts? && parts[0]?.toLocaleLowerCase() == scheme?.toLocaleLowerCase()
-    {uuid,token} = @_getFromAuthString parts[1]
-    @_setMeshbluAuth request, uuid, token
+    return null unless parts? && parts[0]?.toLocaleLowerCase() == scheme?.toLocaleLowerCase()
+    return @_getFromAuthString parts[1]
 
-  _setFromObject: (request, object) =>
+  _getFromObject: (request, object) =>
     {meshblu_auth_uuid, meshblu_auth_token, meshblu_auth_bearer} = object ? {}
 
     if meshblu_auth_bearer?
@@ -68,8 +75,11 @@ class MeshbluAuthExpress
       meshblu_auth_uuid = uuid
       meshblu_auth_token = token
 
-    return unless meshblu_auth_uuid? && meshblu_auth_token?
-    @_setMeshbluAuth request, meshblu_auth_uuid, meshblu_auth_token
+    return null unless meshblu_auth_uuid? && meshblu_auth_token?
+    return {
+      uuid:  _.trim meshblu_auth_uuid
+      token: _.trim meshblu_auth_token
+    }
 
   _setMeshbluAuth: (request, uuid, token) =>
     return unless uuid? && token?

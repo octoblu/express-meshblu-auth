@@ -1,272 +1,230 @@
 MeshbluAuthExpress = require '../src/meshblu-auth-express'
 
 describe 'MeshbluAuthExpress', ->
+  describe '->getFromAnywhere', ->
+    beforeEach ->
+      @sut = new MeshbluAuthExpress
 
-  describe '->setFromBearerToken', ->
+    describe '2nd to worst case (bearer token)', ->
+      beforeEach ->
+        @result = @sut.getFromAnywhere headers: {authorization: 'Bearer Z3JlZW5pc2gteWVsbG93OmJsdWUtYS1sb3QK'}
+
+      it 'should return the auth', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+
+    describe 'worst case (invalid bearer token)', ->
+      beforeEach ->
+        @result = @sut.getFromAnywhere headers: {authorization: 'Bearer zpwaW5raXNoLBAD'}
+
+      it 'should return null', ->
+        expect(@result).to.be.null
+
+  describe '->getFromBearerToken', ->
     beforeEach ->
       @sut = new MeshbluAuthExpress
 
     describe 'with a valid bearer token', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Bearer Z3JlZW5pc2gteWVsbG93OmJsdWUtYS1sb3QK'
-        @sut.setFromBearerToken(@request)
+        @result = @sut.getFromBearerToken headers: {authorization: 'Bearer Z3JlZW5pc2gteWVsbG93OmJsdWUtYS1sb3QK'}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+      it 'should return the auth', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
     describe 'with a different valid bearer token', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Bearer c3VwZXItcGluazpwaW5raXNoLXB1cnBsZWlzaAo='
-        @sut.setFromBearerToken(@request)
+        @result = @sut.getFromBearerToken headers: {authorization: 'Bearer c3VwZXItcGluazpwaW5raXNoLXB1cnBsZWlzaAo='}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
+      it 'should return the auth', ->
+        expect(@result).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
 
-    describe 'with a invalid bearer token', ->
+    describe 'with an invalid bearer token', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Bearer zpwaW5raXNoLBAD'
-        @sut.setFromBearerToken(@request)
+        @result = @sut.getFromBearerToken headers: {authorization: 'Bearer zpwaW5raXNoLBAD'}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
-    describe 'with a invalid header', ->
+    describe 'with an invalid header', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request = {}
-        @sut.setFromBearerToken(@request)
+        @result = @sut.getFromBearerToken {}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
     describe 'with a different authorization scheme', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Basic'
-        @sut.setFromBearerToken(@request)
+        @result = @sut.getFromBearerToken headers: {authorization: 'Basic'}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.not.exist
 
-  describe '->setFromBasicAuth', ->
+  describe '->getFromBasicAuth', ->
     beforeEach ->
       @sut = new MeshbluAuthExpress
 
     describe 'with a valid basic auth', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Basic Z3JlZW5pc2gteWVsbG93OmJsdWUtYS1sb3QK'
-        @sut.setFromBasicAuth(@request)
+        @result = @sut.getFromBasicAuth headers: {authorization: 'Basic Z3JlZW5pc2gteWVsbG93OmJsdWUtYS1sb3QK'}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
     describe 'with a different valid basic auth', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Basic c3VwZXItcGluazpwaW5raXNoLXB1cnBsZWlzaAo='
-        @sut.setFromBasicAuth(@request)
+        @result = @sut.getFromBasicAuth headers: {authorization: 'Basic c3VwZXItcGluazpwaW5raXNoLXB1cnBsZWlzaAo='}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
 
     describe 'with a invalid basic auth', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Basic zpwaW5raXNoLBAD'
-        @sut.setFromBasicAuth(@request)
+        @result = @sut.getFromBasicAuth headers: {authorization: 'Basic zpwaW5raXNoLBAD'}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
     describe 'with a invalid header', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request = {}
-        @sut.setFromBasicAuth(@request)
+        @result = @sut.getFromBasicAuth {}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
     describe 'with a different authorization scheme', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers:
-            authorization: 'Bearer'
-        @sut.setFromBasicAuth(@request)
+        @result = @sut.getFromBasicAuth headers: {authorization: 'Bearer c3VwZXItcGluazpwaW5raXNoLXB1cnBsZWlzaAo='}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
-
-  describe '->setFromCookies', ->
+  describe '->getFromCookies', ->
     beforeEach ->
       @sut = new MeshbluAuthExpress
 
     describe 'with a valid cookie', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
+        @result = @sut.getFromCookies {
           cookies:
             meshblu_auth_uuid: 'greenish-yellow'
             meshblu_auth_token: 'blue-a-lot'
-        @sut.setFromCookies(@request)
+        }
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
     describe 'with a valid bearer cookie', ->
       beforeEach ->
         bearer =  Buffer('i-can-barely-stand:erik', 'utf8').toString('base64')
-        console.log "I can BEARLY Stand #{bearer}"
-        @next = sinon.spy()
-        @request =
-          cookies:
-            meshblu_auth_bearer: bearer
-        @sut.setFromCookies(@request)
+        @result = @sut.getFromCookies cookies: {meshblu_auth_bearer: bearer}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'i-can-barely-stand', token: 'erik'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'i-can-barely-stand', token: 'erik'
 
     describe 'with a different valid cookie', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
+        @result = @sut.getFromCookies {
           cookies:
             meshblu_auth_uuid: 'super-pink'
             meshblu_auth_token: 'pinkish-purpleish'
-        @sut.setFromCookies(@request)
+        }
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
 
     describe 'with invalid cookies', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          cookies: {}
-        @sut.setFromCookies(@request)
+        @result = @sut.getFromCookies cookies: {}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
     describe 'with a invalid header', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request = {}
-        @sut.setFromCookies(@request)
+        @result = @sut.getFromCookies {}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
-  describe '->setFromSkynetHeaders', ->
+  describe '->getFromSkynetHeaders', ->
     beforeEach ->
       @sut = new MeshbluAuthExpress
 
     describe 'with a valid auth', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
+        @result = @sut.getFromXMeshbluHeaders {
           headers:
             'X-Meshblu-UUID': 'greenish-yellow'
             'X-Meshblu-Token': 'blue-a-lot'
-        @sut.setFromXMeshbluHeaders(@request)
+        }
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
     describe 'with a crazy case', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
+        @result = @sut.getFromXMeshbluHeaders {
           headers:
             'x-meshBLU-uuID': 'greenish-yellow'
             'X-meshblu-token': 'blue-a-lot'
-        @sut.setFromXMeshbluHeaders(@request)
+        }
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
-  describe '->setFromSkynetHeaders', ->
+  describe '->getFromSkynetHeaders', ->
     beforeEach ->
       @sut = new MeshbluAuthExpress
 
     describe 'with a valid auth', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
+        @result = @sut.getFromSkynetHeaders {
           headers:
             skynet_auth_uuid: 'greenish-yellow'
             skynet_auth_token: 'blue-a-lot'
-        @sut.setFromSkynetHeaders(@request)
+        }
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
-  describe '->setFromHeaders', ->
+  describe '->getFromHeaders', ->
     beforeEach ->
       @sut = new MeshbluAuthExpress
 
     describe 'with a valid basic auth', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
+        @result = @sut.getFromHeaders {
           headers:
             meshblu_auth_uuid: 'greenish-yellow'
             meshblu_auth_token: 'blue-a-lot'
-        @sut.setFromHeaders(@request)
+        }
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'greenish-yellow', token: 'blue-a-lot'
 
     describe 'with a different valid bearer token', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
+        @result = @sut.getFromHeaders {
           headers:
             meshblu_auth_uuid: 'super-pink'
             meshblu_auth_token: 'pinkish-purpleish'
-        @sut.setFromHeaders(@request)
+        }
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
+      it 'should return the uuid and token', ->
+        expect(@result).to.deep.equal uuid: 'super-pink', token: 'pinkish-purpleish'
 
     describe 'with invalid headers', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request =
-          headers: {}
-        @sut.setFromHeaders(@request)
+        @result = @sut.getFromHeaders headers: {}
 
-      it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+      it 'should return null', ->
+        expect(@result).to.be.null
 
     describe 'with a invalid header', ->
       beforeEach ->
-        @next = sinon.spy()
-        @request = {}
-        @sut.setFromHeaders(@request)
+        @result = @sut.getFromHeaders {}
 
       it 'should set meshbluAuth on the request', ->
-        expect(@request.meshbluAuth).to.not.exist
+        expect(@result).to.be.null
 
     describe 'when instantiated with meshblu configuration', ->
       beforeEach ->
@@ -288,7 +246,12 @@ describe 'MeshbluAuthExpress', ->
           expect(@MeshbluHttp).to.be.calledWithNew
 
         it 'should be instantiated with the correct options', ->
-          expect(@MeshbluHttp).to.be.calledWith server: 'yellow-mellow', port: 'greeeeeeennn', uuid: 'blackened', token: 'bluened'
+          expect(@MeshbluHttp).to.be.calledWith {
+            server: 'yellow-mellow'
+            port: 'greeeeeeennn'
+            uuid: 'blackened'
+            token: 'bluened'
+          }
 
         it 'should call meshbluHttp.device with correct url and options', ->
           expect(@meshbluHttp.whoami).to.have.been.called
@@ -298,21 +261,27 @@ describe 'MeshbluAuthExpress', ->
             @meshbluHttp.whoami.yield null, {uuid: 'blackened', foo: 'bar'}
 
           it 'should yields without an error', ->
-            expect(@error).to.not.exist
+            expect(@error).not.to.exist
 
-          it 'should NOT yield the device, because it actually gives us the device mixed with webhook metadata...sometimes.', ->
-            expect(@result).to.not.exist
+          it 'should yield the credentials and server info', ->
+            expect(@result).to.deep.equal {
+              server: 'yellow-mellow'
+              port: 'greeeeeeennn'
+              uuid: 'blackened'
+              token: 'bluened'
+            }
 
         describe 'when MeshbluHttp yields an error', ->
           beforeEach ->
             @meshbluHttp.whoami.yield new Error('not authorized')
 
           it 'should yields with an error', ->
-            expect(@error).to.exist
+            expect(=> throw @error).to.throw 'not authorized'
 
         describe 'when MeshbluHttp yields no device', ->
           beforeEach ->
             @meshbluHttp.whoami.yield null, null
 
-          it 'should yields with an error', ->
-            expect(@error).to.exist
+          it 'should yields nulls', ->
+            expect(@error).to.be.null
+            expect(@result).to.be.null

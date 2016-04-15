@@ -1,21 +1,23 @@
 MeshbluAuthExpress = require './src/meshblu-auth-express'
 
-module.exports = (meshbluOptions, {errorCallback}={}) ->
-  meshbluAuthExpress = new MeshbluAuthExpress meshbluOptions
+class MeshbluAuth
+  constructor: (options) ->
+    @meshbluAuthExpress = new MeshbluAuth options
 
-  middleware = (req, res, next) ->
+  retrieve: (req, res, next) =>
+    credentials = @meshbluAuthExpress.getFromAnywhere req
+    return next() unless credentials?
 
-    meshbluAuthExpress.getFromAnywhere req
-    {uuid, token} = req.meshbluAuth ? {}
-
-    unless uuid? && token?
-      return errorCallback new Error('could not get uuid and token'), {req, res} if errorCallback?
-      return res.status(401).end()
-
-    meshbluAuthExpress.authDeviceWithMeshblu uuid, token, (error) ->
-      if error?
-        return errorCallback error, {req, res} if errorCallback?
-        return res.status(error.code ? 403).send("Meshblu Authentication Failed")
+    {uuid, token} = credentials
+    @meshbluAuthExpress.authDeviceWithMeshblu uuid, token, (error, meshbluAuth) ->
+      return res.sendStatus(500) if error?
+      req.meshbluAuth = meshbluAuth if meshbluAuth?
       next()
 
-  middleware
+  gateway: (req, res, next) =>
+    credentials = @meshbluAuthExpress.getFromAnywhere req
+    return res.sendStatus 401 unless credentials?
+    return res.sendStatus 403 unless req.meshbluAuth?
+    return next()
+
+module.exports = MeshbluAuth
