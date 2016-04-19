@@ -25,13 +25,17 @@ var meshbluAuth = new MeshbluAuth({
 var app = express();
 // Retrieves the uuid & token from the request,
 // validate them, then add them to request.meshbluAuth
-app.use(meshbluAuth.retrieve);
+app.use(meshbluAuth.retrieve());
 
 // Returns a 401 if no uuid & token were provided in the request
 // Returns a 403 if the uuid & token provided were invalid
 // calls next otherwise
 // meshbluAuth.retrieve MUST BE CALLED FIRST in the middleware chain
-app.use(meshbluAuth.gateway);
+app.use(meshbluAuth.gateway());
+
+// Can be used instead of gateway. Redirects user if uuid & token were not
+// provided or were not valid
+app.use(meshbluAuth.gatewayRedirect('/login'));
 
 app.use(function (request, response) {
   response.json({uuid: request.meshbluAuth.uuid, token: request.meshbluAuth.token});
