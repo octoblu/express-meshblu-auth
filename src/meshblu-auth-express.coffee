@@ -11,7 +11,8 @@ class MeshbluAuthExpress
     meshbluHttp.whoami (error, body) =>
       return callback error if error? && !@_isUserError error
       return callback null, null if _.isEmpty body
-      return callback null, _.defaults {uuid: uuid, token: token}, @meshbluOptions
+      bearerToken = @_generateBearerToken {uuid, token}
+      return callback null, _.defaults {uuid, token, bearerToken}, @meshbluOptions
 
   getFromAnywhere: (request) =>
     auth = @getFromHeaders request
@@ -51,6 +52,9 @@ class MeshbluAuthExpress
     @_getFromObject request,
       meshblu_auth_uuid: lowerCaseHeaders['x-meshblu-uuid']
       meshblu_auth_token: lowerCaseHeaders['x-meshblu-token']
+
+  _generateBearerToken: ({uuid,token}) =>
+    return new Buffer("#{uuid}:#{token}").toString 'base64'
 
   _getFromAuthString: (authString) =>
     auth = new Buffer(authString, 'base64').toString().split(':')

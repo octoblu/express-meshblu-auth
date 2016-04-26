@@ -263,12 +263,13 @@ describe 'MeshbluAuthExpress', ->
           it 'should yields without an error', ->
             expect(@error).not.to.exist
 
-          it 'should yield the credentials and server info', ->
+          it 'should yield the credentials, bearerToken, server info', ->
             expect(@result).to.deep.equal {
               server: 'yellow-mellow'
               port: 'greeeeeeennn'
               uuid: 'blackened'
               token: 'bluened'
+              bearerToken: new Buffer('blackened:bluened').toString 'base64'
             }
 
         describe 'when MeshbluHttp yields an error with no code', ->
