@@ -229,7 +229,7 @@ describe 'MeshbluAuthExpress', ->
     describe 'when instantiated with meshblu configuration', ->
       beforeEach ->
         @meshbluHttp =
-          whoami: sinon.stub()
+          authenticate: sinon.stub()
         @MeshbluHttp = sinon.spy => @meshbluHttp
         dependencies = MeshbluHttp: @MeshbluHttp
         options =
@@ -254,11 +254,11 @@ describe 'MeshbluAuthExpress', ->
           }
 
         it 'should call meshbluHttp.device with correct url and options', ->
-          expect(@meshbluHttp.whoami).to.have.been.called
+          expect(@meshbluHttp.authenticate).to.have.been.called
 
         describe 'when MeshbluHttp yields a device', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield null, {uuid: 'blackened', foo: 'bar'}
+            @meshbluHttp.authenticate.yield null, {uuid: 'blackened', foo: 'bar'}
 
           it 'should yields without an error', ->
             expect(@error).not.to.exist
@@ -273,7 +273,7 @@ describe 'MeshbluAuthExpress', ->
 
         describe 'when MeshbluHttp yields an error with no code', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield new Error('Generic Error')
+            @meshbluHttp.authenticate.yield new Error('Generic Error')
 
           it 'should yields with an error', ->
             expect(=> throw @error).to.throw 'Generic Error'
@@ -282,7 +282,7 @@ describe 'MeshbluAuthExpress', ->
           beforeEach ->
             error = new Error('Unauthorized')
             error.code = 401
-            @meshbluHttp.whoami.yield error
+            @meshbluHttp.authenticate.yield error
 
           it 'should yield nulls', ->
             expect(@error).to.be.null
@@ -292,14 +292,14 @@ describe 'MeshbluAuthExpress', ->
           beforeEach ->
             error = new Error('Internal Server Error')
             error.code = 500
-            @meshbluHttp.whoami.yield error
+            @meshbluHttp.authenticate.yield error
 
           it 'should yields with an error', ->
             expect(=> throw @error).to.throw 'Internal Server Error'
 
         describe 'when MeshbluHttp yields no device', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield null, null
+            @meshbluHttp.authenticate.yield null, null
 
           it 'should yields nulls', ->
             expect(@error).to.be.null
