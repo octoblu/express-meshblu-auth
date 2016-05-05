@@ -8,7 +8,7 @@ class MeshbluAuthExpress
     return callback new Error('Meshblu credentials missing') unless uuid? && token?
     options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
     meshbluHttp = new @MeshbluHttp options
-    meshbluHttp.whoami (error, body) =>
+    meshbluHttp.authenticate (error, body) =>
       return callback error if error?
 
       if _.isEmpty body
@@ -51,7 +51,7 @@ class MeshbluAuthExpress
 
   _getFromAuthString: (authString) =>
     auth = new Buffer(authString, 'base64').toString().split(':')
-    return uuid: auth[0], token: auth[1]  
+    return uuid: auth[0], token: auth[1]
 
   _setFromAuthorizationHeader: (request, scheme) =>
     return unless request.headers?

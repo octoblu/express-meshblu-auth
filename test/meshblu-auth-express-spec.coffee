@@ -271,7 +271,7 @@ describe 'MeshbluAuthExpress', ->
     describe 'when instantiated with meshblu configuration', ->
       beforeEach ->
         @meshbluHttp =
-          whoami: sinon.stub()
+          authenticate: sinon.stub()
         @MeshbluHttp = sinon.spy => @meshbluHttp
         dependencies = MeshbluHttp: @MeshbluHttp
         options =
@@ -291,11 +291,11 @@ describe 'MeshbluAuthExpress', ->
           expect(@MeshbluHttp).to.be.calledWith server: 'yellow-mellow', port: 'greeeeeeennn', uuid: 'blackened', token: 'bluened'
 
         it 'should call meshbluHttp.device with correct url and options', ->
-          expect(@meshbluHttp.whoami).to.have.been.called
+          expect(@meshbluHttp.authenticate).to.have.been.called
 
         describe 'when MeshbluHttp yields a device', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield null, {uuid: 'blackened', foo: 'bar'}
+            @meshbluHttp.authenticate.yield null, {uuid: 'blackened', foo: 'bar'}
 
           it 'should yields without an error', ->
             expect(@error).to.not.exist
@@ -305,14 +305,14 @@ describe 'MeshbluAuthExpress', ->
 
         describe 'when MeshbluHttp yields an error', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield new Error('not authorized')
+            @meshbluHttp.authenticate.yield new Error('not authorized')
 
           it 'should yields with an error', ->
             expect(@error).to.exist
 
         describe 'when MeshbluHttp yields no device', ->
           beforeEach ->
-            @meshbluHttp.whoami.yield null, null
+            @meshbluHttp.authenticate.yield null, null
 
           it 'should yields with an error', ->
             expect(@error).to.exist
