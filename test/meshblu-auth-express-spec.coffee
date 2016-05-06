@@ -309,10 +309,3 @@ describe 'MeshbluAuthExpress', ->
 
           it 'should yields with an error', ->
             expect(@error).to.exist
-
-        describe 'when MeshbluHttp yields no device', ->
-          beforeEach ->
-            @meshbluHttp.authenticate.yield null, null
-
-          it 'should yields with an error', ->
-            expect(@error).to.exist
