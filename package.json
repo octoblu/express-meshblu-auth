@@ -1,6 +1,6 @@
 {
   "name": "express-meshblu-auth",
-  "version": "5.3.2",
+  "version": "5.3.3",
   "description": "Express middleware for all meshblu auth styles",
   "main": "index.js",
   "scripts": {
