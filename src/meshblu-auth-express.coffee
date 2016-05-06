@@ -8,9 +8,10 @@ class MeshbluAuthExpress
     return callback new Error('Meshblu credentials missing') unless uuid? && token?
     options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
     meshbluHttp = new @MeshbluHttp options
-    meshbluHttp.authenticate (error, body) =>
-      return callback error if error? && !@_isUserError error
-      return callback null, null if _.isEmpty body
+    meshbluHttp.authenticate (error) =>
+      if error?
+        return callback() if @_isUserError error
+        return callback error
       bearerToken = @_generateBearerToken {uuid, token}
       return callback null, _.defaults {uuid, token, bearerToken}, @meshbluOptions
 
