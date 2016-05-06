@@ -10,7 +10,7 @@ class MeshbluAuthExpress
     meshbluHttp = new @MeshbluHttp options
     meshbluHttp.authenticate (error) =>
       if error?
-        return callback() if @_isUserError error
+        return callback null, null if @_isUserError error
         return callback error
       return callback null, _.defaults {uuid: uuid, token: token}, @meshbluOptions
 

@@ -296,11 +296,3 @@ describe 'MeshbluAuthExpress', ->
 
           it 'should yields with an error', ->
             expect(=> throw @error).to.throw 'Internal Server Error'
-
-        describe 'when MeshbluHttp yields no device', ->
-          beforeEach ->
-            @meshbluHttp.authenticate.yield null, null
-
-          it 'should yields nulls', ->
-            expect(@error).to.be.null
-            expect(@result).to.be.null
