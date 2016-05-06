@@ -282,24 +282,17 @@ describe 'MeshbluAuthExpress', ->
 
         describe 'when MeshbluHttp yields a device', ->
           beforeEach ->
-            @meshbluHttp.authenticate.yield null, {uuid: 'blackened', foo: 'bar'}
+            @meshbluHttp.authenticate.yield null, {uuid: 'blackened', token: 'bluened'}
 
           it 'should yields without an error', ->
             expect(@error).to.not.exist
 
           it 'should yield the device', ->
-            expect(@result).to.deep.equal uuid: 'blackened', foo: 'bar'
+            expect(@result).to.deep.equal uuid: 'blackened', token: 'bluened'
 
         describe 'when MeshbluHttp yields an error', ->
           beforeEach ->
             @meshbluHttp.authenticate.yield new Error('not authorized')
-
-          it 'should yields with an error', ->
-            expect(@error).to.exist
-
-        describe 'when MeshbluHttp yields no device', ->
-          beforeEach ->
-            @meshbluHttp.authenticate.yield null, null
 
           it 'should yields with an error', ->
             expect(@error).to.exist

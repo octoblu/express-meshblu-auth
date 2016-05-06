@@ -8,15 +8,15 @@ class MeshbluAuthExpress
     return callback new Error('Meshblu credentials missing') unless uuid? && token?
     options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
     meshbluHttp = new @MeshbluHttp options
-    meshbluHttp.authenticate (error, body) =>
-      return callback error if error?
-
-      if _.isEmpty body
-        error = new Error 'Device Not Found'
-        error.code = 404
+    meshbluHttp.authenticate (error) =>
+      if error?
+        if @_isUserError error
+          error = new Error 'Device Not Found'
+          error.code = 404
+          return callback error
         return callback error
 
-      callback null, body
+      callback null, {uuid, token}
 
   getFromAnywhere: (request) =>
     @setFromHeaders request
@@ -65,6 +65,10 @@ class MeshbluAuthExpress
 
     return unless meshblu_auth_uuid? && meshblu_auth_token?
     @_setMeshbluAuth request, meshblu_auth_uuid, meshblu_auth_token
+
+  _isUserError: (error) =>
+    return unless error.code?
+    error.code < 500
 
   _setMeshbluAuth: (request, uuid, token) =>
     return unless uuid? && token?
