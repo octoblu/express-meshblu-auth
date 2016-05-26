@@ -1,3 +1,7 @@
+{beforeEach, describe, it} = global
+{expect} = require 'chai'
+sinon = require 'sinon'
+
 MeshbluAuthExpress = require '../src/meshblu-auth-express'
 
 describe 'MeshbluAuthExpress', ->

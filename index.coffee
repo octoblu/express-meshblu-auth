@@ -4,7 +4,7 @@ class MeshbluAuth
   constructor: (options) ->
     @meshbluAuthExpress = new MeshbluAuthExpress options
 
-  retrieve: =>
+  auth: =>
     (req, res, next) =>
       credentials = @meshbluAuthExpress.getFromAnywhere req
       return next() unless credentials?
@@ -13,6 +13,19 @@ class MeshbluAuth
       @meshbluAuthExpress.authDeviceWithMeshblu uuid, token, (error, meshbluAuth) ->
         return res.status(500).send(error: error.message) if error?
         req.meshbluAuth = meshbluAuth if meshbluAuth?
+        next()
+
+  get: =>
+    (req, res, next) =>
+      credentials = @meshbluAuthExpress.getFromAnywhere req
+      return next() unless credentials?
+
+      {uuid, token} = credentials
+      @meshbluAuthExpress.getDeviceFromMeshblu uuid, token, (error, response={}) ->
+        return res.status(500).send(error: error.message) if error?
+        {meshbluAuth, meshbluDevice} = response
+        req.meshbluAuth = meshbluAuth if meshbluAuth?
+        req.meshbluDevice = meshbluDevice if meshbluDevice?
         next()
 
   gateway: =>

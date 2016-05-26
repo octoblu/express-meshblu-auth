@@ -15,6 +15,20 @@ class MeshbluAuthExpress
       bearerToken = @_generateBearerToken {uuid, token}
       return callback null, _.defaults {uuid, token, bearerToken}, @meshbluOptions
 
+  getDeviceFromMeshblu: (uuid, token, callback=->) =>
+    return callback new Error('Meshblu credentials missing') unless uuid? && token?
+    options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
+    meshbluHttp = new @MeshbluHttp options
+    meshbluHttp.whoami (error, meshbluDevice) =>
+      if error?
+        return callback null, null if @_isUserError error
+        return callback error
+      return callback null, null unless meshbluDevice?
+
+      bearerToken = @_generateBearerToken {uuid, token}
+      meshbluAuth = _.defaults {uuid, token, bearerToken}, @meshbluOptions
+      return callback null, {meshbluAuth, meshbluDevice}
+
   getFromAnywhere: (request) =>
     auth = @getFromHeaders request
     return auth if auth?
