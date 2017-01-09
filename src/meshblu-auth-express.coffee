@@ -1,4 +1,5 @@
-_ = require 'lodash'
+_     = require 'lodash'
+debug = require('debug')('express-meshblu-auth')
 
 class MeshbluAuthExpress
   constructor: (@meshbluOptions, dependencies={}) ->
@@ -6,27 +7,29 @@ class MeshbluAuthExpress
 
   authDeviceWithMeshblu: (uuid, token, callback=->) =>
     return callback new Error('Meshblu credentials missing') unless uuid? && token?
-    options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
+    options = @_extendMeshbluAuth({ uuid, token })
     meshbluHttp = new @MeshbluHttp options
     meshbluHttp.authenticate (error) =>
       if error?
-        return callback null, null if @_isUserError error
+        isUserError = @_isUserError error
+        debug 'authenticate got an error', { isUserError }, error
+        return callback null, null if isUserError
         return callback error
-      bearerToken = @_generateBearerToken {uuid, token}
-      return callback null, _.defaults {uuid, token, bearerToken}, @meshbluOptions
+      meshbluAuth = @_defaultMeshbluAuth { uuid, token }
+      return callback null, meshbluAuth
 
   getDeviceFromMeshblu: (uuid, token, callback=->) =>
     return callback new Error('Meshblu credentials missing') unless uuid? && token?
-    options = _.extend {}, @meshbluOptions, uuid: uuid, token: token
+    options = @_extendMeshbluAuth({ uuid, token })
     meshbluHttp = new @MeshbluHttp options
     meshbluHttp.whoami (error, meshbluDevice) =>
       if error?
-        return callback null, null if @_isUserError error
+        isUserError = @_isUserError error
+        debug 'whoami got an error', { isUserError }, error
+        return callback null, null if isUserError
         return callback error
       return callback null, null unless meshbluDevice?
-
-      bearerToken = @_generateBearerToken {uuid, token}
-      meshbluAuth = _.defaults {uuid, token, bearerToken}, @meshbluOptions
+      meshbluAuth = @_defaultMeshbluAuth { uuid, token }
       return callback null, {meshbluAuth, meshbluDevice}
 
   getFromAnywhere: (request) =>
@@ -42,7 +45,6 @@ class MeshbluAuthExpress
     return auth if auth?
     auth = @getFromBearerToken request
     return auth if auth?
-
     return null
 
   getFromBasicAuth: (request) =>
@@ -103,10 +105,17 @@ class MeshbluAuthExpress
     return unless error.code?
     error.code < 500
 
+  _extendMeshbluAuth: ({ uuid, token }) =>
+    return _.extend {}, @meshbluOptions, { uuid, token }
+
+  _defaultMeshbluAuth: ({ uuid, token }) =>
+    bearerToken = @_generateBearerToken { uuid, token }
+    return _.defaults { uuid, token, bearerToken }, @meshbluOptions
+
   _setMeshbluAuth: (request, uuid, token) =>
     return unless uuid? && token?
     uuid  = _.trim uuid
     token = _.trim token
-    request.meshbluAuth = _.defaults {uuid: uuid, token: token}, @meshbluOptions, request.meshbluAuth
+    request.meshbluAuth = _.defaults {uuid, token}, @meshbluOptions, request.meshbluAuth
 
 module.exports = MeshbluAuthExpress
