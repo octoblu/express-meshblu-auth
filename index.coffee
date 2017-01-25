@@ -1,3 +1,5 @@
+_ = require 'lodash'
+debug = require('debug')('express-meshblu-auth')
 MeshbluAuthExpress = require './src/meshblu-auth-express'
 
 class MeshbluAuth
@@ -7,6 +9,7 @@ class MeshbluAuth
   auth: =>
     (req, res, next) =>
       credentials = @meshbluAuthExpress.getFromAnywhere req
+      debug 'uuid', _.get(credentials, 'uuid')
       return next() unless credentials?
 
       {uuid, token} = credentials

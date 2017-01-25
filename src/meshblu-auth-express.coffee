@@ -1,5 +1,5 @@
 _     = require 'lodash'
-debug = require('debug')('express-meshblu-auth')
+debug = require('debug')('express-meshblu-auth:info')
 
 class MeshbluAuthExpress
   constructor: (@meshbluOptions, dependencies={}) ->
