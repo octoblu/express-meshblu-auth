@@ -21,6 +21,7 @@ class MeshbluAuth
   get: =>
     (req, res, next) =>
       credentials = @meshbluAuthExpress.getFromAnywhere req
+      debug 'uuid', _.get(credentials, 'uuid')
       return next() unless credentials?
 
       {uuid, token} = credentials
