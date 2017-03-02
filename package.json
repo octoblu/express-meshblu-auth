@@ -1,6 +1,6 @@
 {
   "name": "express-meshblu-auth",
-  "version": "9.0.2",
+  "version": "9.1.0",
   "description": "Express middleware for all meshblu auth styles",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "homepage": "https://github.com/octoblu/express-meshblu-auth",
   "devDependencies": {
     "chai": "^3.5.0",
-    "coffee-coverage": "^1.0.1",
+    "coffee-coverage": "^2.0.1",
     "istanbul": "^0.4.4",
     "mocha": "^3.2.0",
     "mocha-istanbul": "^0.3.0",
@@ -30,10 +30,10 @@
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
-    "coffee-script": "^1.10.0",
-    "debug": "^2.6.0",
+    "coffee-script": "^1.12.4",
+    "debug": "^2.6.1",
     "lodash": "^4.13.1",
-    "meshblu-http": "^9.3.0",
+    "meshblu-http": "^9.7.2",
     "request": "^2.72.0"
   }
 }
