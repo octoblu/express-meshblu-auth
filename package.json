@@ -1,9 +1,10 @@
 {
   "name": "express-meshblu-auth",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "description": "Express middleware for all meshblu auth styles",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "coffee --compile --output dist/ --map src/*.coffee",
     "test": "istanbul cover _mocha -- -R spec"
   },
   "repository": {

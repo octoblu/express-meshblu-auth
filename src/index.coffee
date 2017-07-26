@@ -39,6 +39,14 @@ class MeshbluAuth
       return res.status(403).send(error: 'Forbidden') unless req.meshbluAuth?
       return next()
 
+  gatewayDevice: (uuid) =>
+    (req, res, next) =>
+      credentials = @meshbluAuthExpress.getFromAnywhere req
+      return res.status(401).send(error: 'Unauthorized') unless credentials?
+      return res.status(403).send(error: 'Forbidden') unless req.meshbluAuth?
+      return res.status(403).send(error: 'Forbidden') unless req.meshbluAuth.uuid == uuid
+      return next()
+
   gatewayRedirect: (location) =>
     (req, res, next) =>
       return res.redirect location unless req.meshbluAuth?
