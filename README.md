@@ -39,6 +39,13 @@ app.use(meshbluAuth.get());
 // meshbluAuth.auth or meshbluAuth.get MUST BE CALLED FIRST in the middleware chain
 app.use(meshbluAuth.gateway());
 
+// Returns a 401 if no uuid & token were provided in the request
+// Returns a 403 if the uuid & token provided were invalid
+// Returns a 403 if the uuid given does not match the authorized uuid
+// calls next otherwise
+// meshbluAuth.auth or meshbluAuth.get MUST BE CALLED FIRST in the middleware chain
+app.use(meshbluAuth.gatewayDevice('uuid'));
+
 // Can be used instead of gateway. Redirects user if uuid & token were not
 // provided or were not valid
 app.use(meshbluAuth.gatewayRedirect('/login'));
