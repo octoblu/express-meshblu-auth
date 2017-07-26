@@ -1,6 +1,6 @@
 _ = require 'lodash'
 debug = require('debug')('express-meshblu-auth')
-MeshbluAuthExpress = require './src/meshblu-auth-express'
+MeshbluAuthExpress = require './meshblu-auth-express'
 
 class MeshbluAuth
   constructor: (options) ->
